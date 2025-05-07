@@ -1,0 +1,22 @@
+<div class="container">
+  <h1>Search Results</h1>
+  <p class="search-info">Searching for: <%= query %> (by <%= type %>)</p>
+
+  <% if (error !== null) { %>
+  <div class="error"><%= error %></div>
+  <% } else if (meals.length === 0) { %>
+  <div class="no-results">
+    <p>No recipes found matching your search.</p>
+  </div>
+  <% } else { %>
+  <div class="recipes-grid">
+    <% meals.forEach(meal => { %>
+    <div class="recipe-card">
+      <img src="<%= meal.strMealThumb %>" alt="<%= meal.strMeal %>" />
+      <h2><%= meal.strMeal %></h2>
+      <a href="/recipe/<%= meal.idMeal %>" class="button">View Recipe</a>
+    </div>
+    <% }); %>
+  </div>
+  <% } %>
+</div>

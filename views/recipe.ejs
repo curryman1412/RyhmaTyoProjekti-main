@@ -1,0 +1,172 @@
+<div class="container">
+  <% if (error !== null) { %>
+  <div class="error"><%= error %></div>
+  <% } else if (recipe) { %>
+  <div class="recipe-detail">
+    <div class="recipe-header">
+      <h1><%= recipe.strMeal %></h1>
+      <img
+        src="<%= recipe.strMealThumb %>"
+        alt="<%= recipe.strMeal %>"
+        class="recipe-image"
+      />
+    </div>
+
+    <div class="recipe-info">
+      <div class="recipe-category">
+        <h3>Category:</h3>
+        <p><%= recipe.strCategory %></p>
+      </div>
+      <div class="recipe-area">
+        <h3>Cuisine:</h3>
+        <p><%= recipe.strArea %></p>
+      </div>
+    </div>
+
+   
+    <div class="recipe-links">
+      <% if (recipe.strSource) { %>
+      <a
+        href="<%= recipe.strSource %>"
+        target="_blank"
+        class="recipe-link source-link"
+      >
+        <span class="link-icon">🔗</span> View Original Recipe
+      </a>
+      <% } %>
+    
+      <a
+        href="https://www.themealdb.com/meal/<%= recipe.idMeal %>-<%= recipe.strMeal.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '') %>-recipe"
+        target="_blank"
+        class="recipe-link themealdb-link"
+      >
+        <span class="link-icon">🌐</span> View on TheMealDB
+      </a>
+      <% if (locals.user) { %>
+        <form action="/recipe/<%= recipe.idMeal %>/favorite" method="POST" class="favorite-form">
+          <input type="hidden" name="recipe_name" value="<%= recipe.strMeal %>">
+          <input type="hidden" name="recipe_thumbnail" value="<%= recipe.strMealThumb %>">
+          <button type="submit" class="favorite-button">Favorite</button>
+        </form>
+      <% } %>
+      
+      
+      
+    </div>
+    
+
+    <div class="recipe-ingredients">
+      <h3>Ingredients:</h3>
+      <ul>
+        <% for(let i = 1; i <= 20; i++) { %> <% if(recipe[`strIngredient${i}`]
+        && recipe[`strIngredient${i}`].trim() !== '') { %>
+        <li>
+          <%= recipe[`strMeasure${i}`] %> <%= recipe[`strIngredient${i}`] %>
+        </li>
+        <% } %> <% } %>
+      </ul>
+    </div>
+
+    <div class="recipe-instructions">
+      <h3>Instructions:</h3>
+      <% const steps = recipe.strInstructions.split(/[.!?]/).filter(step =>
+      step.trim()); %>
+      <p><%= steps.map(step => step.trim() + '.').join('\n').trim() %></p>
+    </div>
+
+    <% if (locals.user) { %>
+    <div class="rating-section">
+      <h3>Rate this recipe</h3>
+      <% if (ratings && ratings.length > 0) { %>
+      <div class="average-rating">
+        <% const avgRating = ratings.reduce((sum, r) => sum +
+        parseInt(r.rating), 0) / ratings.length; const roundedAvg =
+        Math.round(avgRating * 10) / 10; %>
+        <p>
+          Average Rating: <strong><%= roundedAvg %></strong> / 5 (<%=
+          ratings.length %> reviews)
+        </p>
+        <div class="rating-stars">
+          <% for(let i = 1; i <= 5; i++) { %>
+          <span class="star <%= i <= avgRating ? 'filled' : '' %>">★</span>
+          <% } %>
+        </div>
+      </div>
+      <% } %>
+      <form
+        action="/recipe/<%= recipe.idMeal %>/rate"
+        method="POST"
+        class="rating-form"
+      >
+        <div class="rating-input">
+          <div class="stars">
+            <input type="radio" id="star5" name="rating" value="5" required />
+            <label for="star5" title="5 stars">★</label>
+            <input type="radio" id="star4" name="rating" value="4" />
+            <label for="star4" title="4 stars">★</label>
+            <input type="radio" id="star3" name="rating" value="3" />
+            <label for="star3" title="3 stars">★</label>
+            <input type="radio" id="star2" name="rating" value="2" />
+            <label for="star2" title="2 stars">★</label>
+            <input type="radio" id="star1" name="rating" value="1" />
+            <label for="star1" title="1 star">★</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="comment">Comment (optional):</label>
+          <textarea id="comment" name="comment" rows="3"></textarea>
+        </div>
+        <button type="submit" class="button">Submit Rating</button>
+      </form>
+    </div>
+    <% } else { %>
+    <div class="login-prompt">
+      <% if (ratings && ratings.length > 0) { %>
+      <div class="average-rating">
+        <% const avgRating = ratings.reduce((sum, r) => sum +
+        parseInt(r.rating), 0) / ratings.length; const roundedAvg =
+        Math.round(avgRating * 10) / 10; %>
+        <p>
+          Average Rating: <strong><%= roundedAvg %></strong> / 5 (<%=
+          ratings.length %> reviews)
+        </p>
+        <div class="rating-stars">
+          <% for(let i = 1; i <= 5; i++) { %>
+          <span class="star <%= i <= avgRating ? 'filled' : '' %>">★</span>
+          <% } %>
+        </div>
+      </div>
+      <% } %>
+      <p>Please <a href="/login">login</a> to rate this recipe.</p>
+    </div>
+    <% } %> <% if (ratings && ratings.length > 0) { %>
+    <div class="ratings-list">
+      <h3>User Ratings</h3>
+      <% ratings.forEach(rating => { %>
+      <div class="rating-item">
+        <div class="rating-header">
+          <span class="rating-user"><%= rating.username %></span>
+          <div class="rating-stars">
+            <% for(let i = 1; i <= 5; i++) { %>
+            <span
+              class="star <%= i <= parseInt(rating.rating) ? 'filled' : '' %>"
+              >★</span
+            >
+            <% } %>
+          </div>
+        </div>
+        <% if (rating.comment) { %>
+        <p class="rating-comment"><%= rating.comment %></p>
+        <% } %>
+        <span class="rating-date"
+          ><%= new Date(rating.created_at).toLocaleDateString() %></span
+        >
+      </div>
+      <% }); %>
+    </div>
+    <% } %>
+  </div>
+  <% } else { %>
+  <div class="error">Recipe not found</div>
+  <% } %>
+</div>

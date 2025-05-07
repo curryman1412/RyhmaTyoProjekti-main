@@ -1,0 +1,18 @@
+<div class="container">
+  <%- include('partials/search-form') %>
+  <h1><%= category %> Recipes</h1>
+
+  <% if (error !== null) { %>
+  <div class="error"><%= error %></div>
+  <% } else { %>
+  <div class="recipes-grid">
+    <% meals.forEach(meal => { %>
+    <div class="recipe-card">
+      <img src="<%= meal.strMealThumb %>" alt="<%= meal.strMeal %>" />
+      <h2><%= meal.strMeal %></h2>
+      <a href="/recipe/<%= meal.idMeal %>" class="button">View Recipe</a>
+    </div>
+    <% }); %>
+  </div>
+  <% } %>
+</div>

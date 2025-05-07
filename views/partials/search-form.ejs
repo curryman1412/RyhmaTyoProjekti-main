@@ -1,0 +1,12 @@
+
+
+<form action="/search" method="GET" class="search-form">
+  <div class="search-inputs">
+    <input type="text" name="query" placeholder="Search recipes..." value="<%= locals.query || '' %>" required>
+    <select name="type">
+      <option value="name" <%= locals.type === 'name' ? 'selected' : '' %>>By Name</option>
+      <option value="ingredient" <%= locals.type === 'ingredient' ? 'selected' : '' %>>By Ingredient</option>
+    </select>
+    <button type="submit" class="button">Search</button>
+  </div>
+</form>   
